@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.numberone.system.mapper.MachineInfoMapper">
+    
+    <resultMap type="MachineInfo" id="MachineInfoResult">
+        <result property="machineInfoId"    column="machine_info_id"    />
+        <result property="machineCode"    column="machine_code"    />
+        <result property="machineShortCode"    column="machine_short_code"    />
+        <result property="machineType"    column="machine_type"    />
+        <result property="companyCode"    column="company_code"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="authDeadline"    column="auth_deadline"    />
+        <result property="license"    column="license"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+	
+	<sql id="selectMachineInfoVo">
+        select machine_info_id, machine_code, machine_short_code, machine_type, company_code, company_name, auth_deadline, case  when  license is not  null then  '已授权' else '未授权' end  license , status, create_by, create_time, update_by, update_time, remark from sys_machine_info
+    </sql>
+
+    <sql id="selectMachineInfoDto">
+        select machine_info_id, machine_code, machine_type, company_code, company_name, auth_deadline, license , status, create_by, create_time, update_by, update_time, remark from sys_machine_info
+    </sql>
+	
+    <select id="selectMachineInfoList" parameterType="MachineInfo" resultMap="MachineInfoResult">
+        <include refid="selectMachineInfoVo"/>
+        <where>  
+            <if test="machineInfoId != null "> and machine_info_id = #{machineInfoId}</if>
+             <if test="machineCode != null  and machineCode != '' "> and machine_code = #{machineCode}</if>
+             <if test="machineType != null  and machineType != '' "> and machine_type = #{machineType}</if>
+             <if test="companyCode != null  and companyCode != '' "> and company_code = #{companyCode}</if>
+             <if test="companyName != null  and companyName != '' "> and company_name = #{companyName}</if>
+             <if test="authDeadline != null "> and auth_deadline = #{authDeadline}</if>
+             <if test="license != null  and license != '' "> and license = #{license}</if>
+             <if test="status != null "> and status = #{status}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+         </where>
+    </select>
+    
+    <select id="selectMachineInfoById" parameterType="Integer" resultMap="MachineInfoResult">
+        <include refid="selectMachineInfoVo"/>
+        where machine_info_id = #{machineInfoId}
+    </select>
+        
+    <insert id="insertMachineInfo" parameterType="MachineInfo" useGeneratedKeys="true" keyProperty="machineInfoId">
+        insert into sys_machine_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="machineCode != null  and machineCode != ''  ">machine_code,</if>
+			<if test="machineType != null  and machineType != ''  ">machine_type,</if>
+            <if test="machineShortCode != null  and machineShortCode != ''  ">machine_short_code,</if>
+			<if test="companyCode != null  and companyCode != ''  ">company_code,</if>
+			<if test="companyName != null  and companyName != ''  ">company_name,</if>
+			<if test="authDeadline != null  ">auth_deadline,</if>
+			<if test="license != null  and license != ''  ">license,</if>
+			<if test="status != null  ">status,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="machineCode != null  and machineCode != ''  ">#{machineCode},</if>
+			<if test="machineType != null  and machineType != ''  ">#{machineType},</if>
+            <if test="machineShortCode != null  and machineShortCode != ''  ">#{machineShortCode},</if>
+			<if test="companyCode != null  and companyCode != ''  ">#{companyCode},</if>
+			<if test="companyName != null  and companyName != ''  ">#{companyName},</if>
+			<if test="authDeadline != null  ">#{authDeadline},</if>
+			<if test="license != null  and license != ''  ">#{license},</if>
+			<if test="status != null  ">#{status},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateMachineInfo" parameterType="MachineInfo">
+        update sys_machine_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="machineCode != null  and machineCode != ''  ">machine_code = #{machineCode},</if>
+            <if test="machineType != null  and machineType != ''  ">machine_type = #{machineType},</if>
+            <if test="machineShortCode != null  and machineShortCode != ''  ">machine_short_code = #{machineShortCode},</if>
+            <if test="companyCode != null  and companyCode != ''  ">company_code = #{companyCode},</if>
+            <if test="companyName != null  and companyName != ''  ">company_name = #{companyName},</if>
+            auth_deadline = #{authDeadline},
+            <if test="license != null  and license != ''  ">license = #{license},</if>
+            <if test="status != null  ">status = #{status},</if>
+            <if test="createBy != null  and createBy != ''  ">create_by = #{createBy},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where machine_info_id = #{machineInfoId}
+    </update>
+
+    <update id="grantMachines" parameterType="MachineInfo">
+        update sys_machine_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="license != null  and license != ''  ">license = #{license},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where machine_info_id = #{machineInfoId}
+    </update>
+
+    <update id="cancelGrantMachines" parameterType="MachineInfo">
+        update sys_machine_info set license = null,update_time = #{updateTime},update_by = #{updateBy} where machine_info_id = #{machineInfoId}
+    </update>
+
+	<delete id="deleteMachineInfoById" parameterType="Integer">
+        delete from sys_machine_info where machine_info_id = #{machineInfoId}
+    </delete>
+	
+    <delete id="deleteMachineInfoByIds" parameterType="String">
+        delete from sys_machine_info where machine_info_id in 
+        <foreach item="machineInfoId" collection="array" open="(" separator="," close=")">
+            #{machineInfoId}
+        </foreach>
+    </delete>
+
+    <select id="selectMachineInfoByMachineCode" parameterType="String" resultMap="MachineInfoResult">
+        <include refid="selectMachineInfoDto"/>
+        where machine_code = #{machineCode}
+    </select>
+
+    <update id="addMachineUseTime" parameterType="MachineInfo">
+        update sys_machine_info set
+            use_time = use_time + #{addMachineUseTime},
+            update_time = #{updateTime},
+            update_by = #{updateBy}
+        where machine_code = #{machineCode}
+            and machine_type = #{machineType}
+            and company_code = #{companyCode}
+    </update>
+    
+</mapper>

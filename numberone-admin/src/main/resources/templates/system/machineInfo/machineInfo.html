@@ -1,0 +1,228 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								设备机器码：<input type="text" name="machineCode"/>
+							</li>
+
+							<li>
+								设备类型：<input type="text" name="machineType"/>
+							</li>
+
+							<li>
+								公司编码：<input type="text" name="companyCode"/>
+							</li>
+							设备鉴权
+							<li>
+								公司名称：<input type="text" name="companyName"/>
+							</li>
+
+							<li>
+								许可字符串：<input type="text" name="license"/>
+							</li>
+
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+			
+	        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+				<a class="btn btn-danger btn-del disabled" onclick="javascript:grantMachines()"  shiro:hasPermission="system:machineInfo:grantMachines">
+					<i class="fa fa-sign-out"></i> 批量授权
+				</a>
+				<a class="btn btn-danger btn-del disabled" onclick="javascript:cancelGrantMachines()" shiro:hasPermission="system:machineInfo:cancelGrantMachines">
+					<i class="fa fa-sign-out"></i> 批量取消授权
+				</a>
+				<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:machineInfo:add">
+					<i class="fa fa-plus"></i> 添加
+				</a>
+				<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()" shiro:hasPermission="system:machineInfo:edit">
+					<i class="fa fa-edit"></i> 修改
+				</a>
+				<a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:machineInfo:remove">
+					<i class="fa fa-remove"></i> 删除
+				</a>
+				<a class="btn btn-info" onclick="$.table.importExcel()" shiro:hasPermission="system:machineInfo:import">
+					<i class="fa fa-upload"></i> 导入
+				</a>
+				<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="system:machineInfo:export">
+						<i class="fa fa-download"></i> 导出
+				 </a>
+			</div>
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('system:machineInfo:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('system:machineInfo:remove')}]];
+        var grantMachineFlag = [[${@permission.hasPermi('system:machineInfo:grantMachines')}]];
+        var prefix = ctx + "system/machineInfo";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+				exportUrl: prefix + "/export",
+				importUrl: prefix + "/importData",
+		        importTemplateUrl: prefix + "/importTemplate",
+                modalName: "设备",
+				search: false,
+		        showExport: true,
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'machineInfoId', 
+					title : '设备id',
+					visible: false
+				},
+				{
+					field : 'machineCode', 
+					title : '设备机器码',
+					sortable: true
+				},
+				{
+					field : 'machineType', 
+					title : '设备类型',
+					sortable: true
+				},
+				{
+					field : 'machineShortCode',
+					title : '设备机短码',
+					sortable: true
+				},
+				{
+					field : 'companyCode', 
+					title : '公司编码',
+					sortable: true
+				},
+				{
+					field : 'companyName', 
+					title : '公司名称',
+					sortable: true
+				},
+				{
+					field : 'authDeadline', 
+					title : '授权期限',
+					sortable: true
+				},
+				{
+					field : 'license', 
+					title : '是否已授权',
+					sortable: true
+				},
+				{
+					field : 'status', 
+					title : '状态（0正常 1停用）',
+					sortable: true
+				},
+				{
+					field : 'createBy', 
+					title : '创建者',
+					sortable: true
+				},
+				{
+					field : 'createTime', 
+					title : '创建时间',
+					sortable: true
+				},
+				{
+					field : 'updateBy', 
+					title : '更新者',
+					sortable: true
+				},
+				{
+					field : 'updateTime', 
+					title : '更新时间',
+					sortable: true
+				},
+				{
+					field : 'remark', 
+					title : '备注',
+					sortable: true
+				},
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+		            	actions.push('<a class="btn btn-success btn-xs ' + grantMachineFlag + '" href="#" onclick="javascript:grantMachine(\'' + row.machineInfoId + '\')" ><i class="fa fa-edit"></i>授权</a> ');
+		            	actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.machineInfoId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.machineInfoId + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+
+        // 批量授权
+		function grantMachines() {
+		    var rows = $.table.selectColumns("machineInfoId");
+		    if (rows.length == 0) {
+		        $.modal.alertWarning("请选择要授权的设备");
+		        return;
+		    }
+		    $.modal.confirm("确认要授权选中的数据吗?", function() {
+		        var url = prefix + "/grantMachines";
+		        var data = { "ids": rows };
+		        $.operate.post(url, data);
+		    });
+		}
+
+		// 授权
+		function grantMachine(machineInfoId) {
+
+		    $.modal.confirm("确认要授权吗?", function() {
+		        var url = prefix + "/grantMachines";
+		        var data = { "ids": new Array(machineInfoId)};
+		        $.operate.post(url, data);
+		    });
+		}
+
+		// 批量取消授权
+		function cancelGrantMachines() {
+		    var rows = $.table.selectColumns("machineInfoId");
+		    if (rows.length == 0) {
+		        $.modal.alertWarning("请选择要取消授权的设备");
+		        return;
+		    }
+		    $.modal.confirm("确认要取消授权选中的数据吗?", function() {
+		        var url = prefix + "/cancelGrantMachines";
+		        var data = { "ids": rows };
+		        $.operate.post(url, data);
+		    });
+		}
+    </script>
+</body>
+<form id="importForm" enctype="multipart/form-data" class="mt20 mb10" style="display: none;">
+	<div class="col-xs-offset-1">
+		<input type="file" id="file" name="file"/>
+		<div class="mt10 pt5">
+			<input type="checkbox" id="updateSupport" name="updateSupport" title="如果机器码已经存在，更新这条数据。"> 是否更新已经存在的设备数据
+			&nbsp;	<a onclick="$.table.importTemplate()" class="btn btn-default btn-xs"><i class="fa fa-file-excel-o"></i> 下载模板</a>
+		</div>
+		<font color="red" class="pull-left mt10">
+			提示：仅允许导入“xls”或“xlsx”格式文件！
+		</font>
+	</div>
+</form>
+</html>
