@@ -355,7 +355,7 @@ public class ShiroConfig
     {
         CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
         cookieRememberMeManager.setCookie(rememberMeCookie());
-        cookieRememberMeManager.setCipherKey(Base64.decode("fCq+/xW488hMTCD+cmJ3aQ=="));
+        //以前用的公开的密钥cookieRememberMeManager.setCipherKey(Base64.decode("xxx"));
         return cookieRememberMeManager;
     }
 
