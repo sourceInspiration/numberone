@@ -4,7 +4,6 @@ import com.numberone.common.annotation.Log;
 import com.numberone.common.base.AjaxResult;
 import com.numberone.common.enums.BusinessType;
 import com.numberone.common.page.TableDataInfo;
-import com.numberone.common.utils.DateUtils;
 import com.numberone.common.utils.StringUtils;
 import com.numberone.common.utils.poi.ExcelUtil;
 import com.numberone.framework.util.ShiroUtils;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
@@ -286,16 +286,16 @@ public class MachineInfoController extends BaseController {
         log.info("请求参数为getCompanyCode:" + pushMachinepUseTimeReq.getCompanyCode() + "getMachineCode:" + pushMachinepUseTimeReq.getMachineCode() + "getMachineType:" + pushMachinepUseTimeReq.getMachineType());
         BaseResp resp = new BaseResp();
         if (StringUtils.isEmpty(pushMachinepUseTimeReq.getMachineCode())
-                ||StringUtils.isEmpty(pushMachinepUseTimeReq.getCompanyCode())
-                ||StringUtils.isEmpty(pushMachinepUseTimeReq.getMachineType())) {
+                || StringUtils.isEmpty(pushMachinepUseTimeReq.getCompanyCode())
+                || StringUtils.isEmpty(pushMachinepUseTimeReq.getMachineType())) {
             resp.setCode("fail");
             resp.setMessageInfo("parameter is null");
             return resp;
         }
         SysUser user = getSysUser();
-        if(user !=null){
+        if (user != null) {
             pushMachinepUseTimeReq.setUpdateBy(user.getUserId() + "");
-        }else{
+        } else {
             pushMachinepUseTimeReq.setUpdateBy("webService");
         }
         pushMachinepUseTimeReq.setUpdateTime(new Date());
@@ -322,7 +322,9 @@ public class MachineInfoController extends BaseController {
         } else {
             log.info("命令执行成功==waitFor=============>" + p.waitFor());
             log.info("命令执行成功==exitValue=============>" + p.exitValue());
-            return readFile(machineCode);
+            String licenseStr = readFile(machineCode);
+            deleteFile(machineCode);
+            return licenseStr;
         }
         return null;
     }
@@ -351,6 +353,20 @@ public class MachineInfoController extends BaseController {
             throw e;
         }
         return licenses.toString();
+    }
+
+    public static void deleteFile(String fileName) throws IOException {
+        try {
+            String pathname = ROOT + fileName;
+            File file = new File(pathname);
+            if (file.exists()) {
+                file.delete();
+            } else {
+                log.info("文件不存在" + fileName);
+            }
+        } catch (Exception e) {
+            log.error(fileName + "删除文件异常" + e);
+        }
     }
 
 
